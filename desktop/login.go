@@ -23,7 +23,7 @@ func loginCampus(config *Config) error {
 		"0MKKey": {"登　录"},
 	}
 	// 执行网络请求
-	response, err := client.PostForm(config.LoginURL, formData)
+	response, err := client.PostForm("http://10.0.0.253/0.htm", formData)
 	if err != nil {
 		return fmt.Errorf("网络请求失败")
 	}
