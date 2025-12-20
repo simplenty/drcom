@@ -1,0 +1,22 @@
+#!/bin/bash
+
+INTERFACE=$1
+ACTION=$2
+TARGET_SSID="iHebut"
+
+[ "$ACTION" = "up" ] || exit 0
+CURRENT_SSID=$(nmcli -t -f active,ssid dev wifi | grep '^yes' | cut -d: -f2)
+
+if [ "$CURRENT_SSID" == "$TARGET_SSID" ]; then
+    TARGET_USER=$(who | grep -E '\(:0\)|tty' | awk '{print $1}' | head -n1)
+
+    if [ -n "$TARGET_USER" ]; then
+        USER_ID=$(id -u "$TARGET_USER")
+
+        export DISPLAY=:0
+        export XAUTHORITY="/home/$TARGET_USER/.Xauthority"
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$USER_ID/bus"
+
+        runuser -u "$TARGET_USER" -- /usr/bin/drcom >/dev/null 2>&1 &
+    fi
+fi

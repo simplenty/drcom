@@ -1,0 +1,34 @@
+name: "drcom"
+arch: "amd64"
+platform: "linux"
+version: "1.0.0"
+section: "net"
+priority: "optional"
+maintainer: "simplenty <simplenty@icloud.com>"
+description: "DrCom 自动认证"
+vendor: "simplenty"
+homepage: "https://github.com/simplenty/drcom"
+license: "MIT"
+
+contents:
+  - src: "./drcom"
+    dst: "/usr/bin/drcom"
+    file_info:
+      mode: 0755
+
+  - src: "../../assets/drcom.png"
+    dst: "/usr/share/pixmaps/drcom.png"
+
+  - src: "./drcom.desktop"
+    dst: "/usr/share/applications/drcom.desktop"
+
+  - src: "./99-drcom"
+    dst: "/etc/NetworkManager/dispatcher.d/99-drcom"
+    file_info:
+      mode: 0755
+
+overrides:
+  deb:
+    depends: [libgl1, libx11-6, libxcursor1, libxrandr2, libxinerama1, libxi6, libxxf86vm1, network-manager]
+  rpm:
+    depends: [libX11, libXcursor, libXrandr, libXinerama, libXi, libXxf86vm, mesa-libGL, NetworkManager]

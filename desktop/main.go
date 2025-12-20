@@ -145,7 +145,7 @@ func workflow(application fyne.App) {
 }
 
 func main() {
-	application := app.New()
+	application := app.NewWithID("com.simplenty.drcom")
 	workflow(application)
 	application.Run()
 }

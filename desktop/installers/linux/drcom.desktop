@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=DrCom 自动认证
+Comment=DrCom Client for iHebut
+Exec=/usr/bin/drcom
+Icon=drcom
+Terminal=false
+Categories=Network;Utility;
+StartupWMClass=com.simplenty.drcom
