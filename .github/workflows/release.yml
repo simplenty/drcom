@@ -1,0 +1,99 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-go
+            mingw-w64-x86_64-nsis
+
+      - name: Install Go Dependencies
+        shell: msys2 {0}
+        run: |
+          cd desktop
+          go mod tidy
+
+      - name: Compile
+        shell: msys2 {0}
+        run: |
+          cd desktop
+          go build -v -ldflags="-H=windowsgui -s -w" -o ./installers/windows/drcom.exe
+
+      - name: Package
+        shell: msys2 {0}
+        run: |
+          cd desktop/installers/windows
+          makensis install.nsi
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            desktop/installers/windows/*-setup.exe
+  
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
+
+      - name: Install GUI build dependencies (Fyne / OpenGL)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgl1-mesa-dev \
+            xorg-dev \
+            libx11-dev \
+            libxcursor-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxi-dev \
+            libxxf86vm-dev \
+            libxkbcommon-dev \
+            libwayland-dev \
+            wayland-protocols \
+            libegl1-mesa-dev
+
+      - name: Install Go Dependencies
+        run: |
+          cd desktop
+          go mod tidy
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+          
+
+      - name: Compile
+        run: |
+          cd desktop
+          go build -v -o ./installers/linux/drcom
+
+      - name: Package
+        run: |
+          cd desktop/installers/linux/
+          nfpm pkg --packager deb --target .
+          nfpm pkg --packager rpm --target .
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            desktop/installers/linux/*.deb
+            desktop/installers/linux/*.rpm

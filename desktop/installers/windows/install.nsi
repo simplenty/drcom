@@ -10,9 +10,9 @@
 !define VERSION "1.0.0.0"
 
 Name "${APP_NAME}"
-OutFile "DrCom_Setup.exe"
-InstallDir "$PROGRAMFILES\DrComClient"
-InstallDirRegKey HKLM "Software\${APP_NAME}" ""
+OutFile "drcom-${VERSION}-amd64-setup.exe"
+InstallDir "$PROGRAMFILES64\DrComClient"
+InstallDirRegKey HKLM "Software\${PUBLISHER}\DrComClient" "InstallDir"
 RequestExecutionLevel admin
 Unicode true
 ManifestDPIAware true
@@ -41,6 +41,7 @@ VIAddVersionKey "LegalCopyright" "Copyright © 2025 ${PUBLISHER}"
 
 ; --- 安装主程序 ---
 Section "Install"
+    SetRegView 64
     SetOutPath "$INSTDIR"
     SetOverwrite on
     File "${EXE_NAME}"
@@ -70,6 +71,7 @@ SectionEnd
 
 ; --- 卸载程序 ---
 Section "Uninstall"
+    SetRegView 64
     ExecWait 'schtasks /delete /tn "${TASK_NAME}" /f'
 
     Delete "$INSTDIR\${EXE_NAME}"
