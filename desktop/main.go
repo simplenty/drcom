@@ -50,6 +50,10 @@ func showDialogWindow(application fyne.App, message string, onClosed func()) {
 		}
 	})
 
+	window.SetOnClosed(func() {
+		os.Exit(0)
+	})
+
 	window.RequestFocus()
 	window.Resize(fyne.NewSize(360, window.Content().MinSize().Height+64))
 	window.CenterOnScreen()
@@ -119,6 +123,15 @@ func workflow(application fyne.App) {
 	if config, err := loadConfig("config.json"); err == nil {
 		if err := loginCampus(config); err == nil {
 			os.Exit(0)
+		} else if err.Error() == "账号错误" || err.Error() == "密码错误" {
+			showDialogWindow(application, err.Error(), func() {
+				if err := deleteConfig("config.json"); err != nil {
+					showDialogWindow(application, "无法删除错误配置文件", func() {
+						os.Exit(1)
+					})
+				}
+				workflow(application)
+			})
 		} else {
 			showDialogWindow(application, err.Error(), func() {
 				os.Exit(1)
@@ -130,10 +143,6 @@ func workflow(application fyne.App) {
 				func(config Config) {
 					if err := saveConfig("config.json", config); err == nil {
 						workflow(application)
-					} else {
-						showDialogWindow(application, err.Error(), func() {
-							os.Exit(1)
-						})
 					}
 				},
 				func() {

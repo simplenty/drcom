@@ -73,3 +73,21 @@ func saveConfig(filename string, config Config) error {
 
 	return nil
 }
+
+func deleteConfig(filename string) error {
+	path, err := resolveConfigPath(filename)
+	if err != nil {
+		return fmt.Errorf("无法解析配置文件路径: %w", err)
+	}
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil
+	}
+
+	err = os.Remove(path)
+	if err != nil {
+		return fmt.Errorf("无法删除配置文件: %w", err)
+	}
+
+	return nil
+}
