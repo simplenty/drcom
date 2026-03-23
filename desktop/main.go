@@ -123,7 +123,7 @@ func workflow(application fyne.App) {
 	if config, err := loadConfig("config.json"); err == nil {
 		if err := loginCampus(config); err == nil {
 			os.Exit(0)
-		} else if err.Error() == "账号错误" || err.Error() == "密码错误" {
+		} else if err.Error() == "账号或密码错误" {
 			showDialogWindow(application, err.Error(), func() {
 				if err := deleteConfig("config.json"); err != nil {
 					showDialogWindow(application, "无法删除错误配置文件", func() {
