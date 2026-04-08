@@ -3,7 +3,6 @@ package main
 import (
 	_ "embed"
 	_ "image/png"
-	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -50,8 +49,8 @@ func showDialogWindow(application fyne.App, message string, onClosed func()) {
 		}
 	})
 
-	window.SetOnClosed(func() {
-		os.Exit(0)
+	window.SetCloseIntercept(func() {
+		application.Quit()
 	})
 
 	window.RequestFocus()
@@ -122,19 +121,19 @@ func showConfigWindow(application fyne.App, onSaved func(config Config), onClose
 func workflow(application fyne.App) {
 	if config, err := loadConfig("config.json"); err == nil {
 		if err := loginCampus(config); err == nil {
-			os.Exit(0)
+			application.Quit()
 		} else if err.Error() == "账号或密码错误" {
 			showDialogWindow(application, err.Error(), func() {
 				if err := deleteConfig("config.json"); err != nil {
 					showDialogWindow(application, "无法删除错误配置文件", func() {
-						os.Exit(1)
+						application.Quit()
 					})
 				}
 				workflow(application)
 			})
 		} else {
 			showDialogWindow(application, err.Error(), func() {
-				os.Exit(1)
+				application.Quit()
 			})
 		}
 	} else {
@@ -146,7 +145,7 @@ func workflow(application fyne.App) {
 					}
 				},
 				func() {
-					os.Exit(1)
+					application.Quit()
 				},
 			)
 		})
