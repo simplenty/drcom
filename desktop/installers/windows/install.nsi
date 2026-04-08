@@ -7,7 +7,10 @@
 !define EXE_NAME "drcom.exe"
 !define TASK_NAME "DrCom_Auto_iHebut"
 !define PUBLISHER "simplenty"
-!define VERSION "1.0.1.0"
+
+!ifndef VERSION
+  !define VERSION "0.0.0.0"
+!endif
 
 Name "${APP_NAME}"
 OutFile "drcom-${VERSION}-amd64-setup.exe"
